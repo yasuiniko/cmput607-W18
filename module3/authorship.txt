@@ -1,0 +1,4 @@
+I wrote module3.py, but adapted plotting code from Cam Linke and Kanerva coding from Kris de Asis.
+kanerva.py is modified from Jaden Travnik's code.
+
+The external python modules used are numpy, serial_asyncio, and visdom.
