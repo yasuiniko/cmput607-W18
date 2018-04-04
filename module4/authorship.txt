@@ -1,0 +1,3 @@
+I wrote module4.py, but adapted plotting code from Cam Linke.
+The external python modules used are numpy, serial_asyncio, and visdom.
+I also used tidyverse, an R module.

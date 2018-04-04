@@ -1,0 +1,10 @@
+.idea
+*.csv
+*.npy
+*.pdf
+.R*
+
+__pycache__
+
+plotting.py
+servo.py

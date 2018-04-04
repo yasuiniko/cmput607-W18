@@ -1,0 +1,193 @@
+---
+title: "module4_plots"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+read_params <- function(location) {
+  x <- read.csv(location, header=FALSE) 
+  n <- length(x)
+  x <- x %>%
+    t %>%
+    as.tibble
+  names(x) <- c('mean', 'stdev')
+  x <- gather(x, 'parameter')
+  x$x <- 1:n
+  x
+}
+
+read_reward <- function(location) {
+  x <- read.csv(location, header=FALSE) 
+  n <- length(x)
+  x <- x %>%
+    t %>%
+    as.tibble
+  
+  if (length(names(x)) > 1) {
+    names(x) <- c('AC', 'random')
+    x <- x %>% mutate(reward=cumsum(AC-random),
+                      AC=cumsum(AC),
+                      random=cumsum(random))
+    x <- gather(x)
+  } else {
+    names(x) <- c('reward')
+    x <- x %>% mutate(reward=cumsum(reward))
+  }
+  
+  x$x <- 1:n
+  x
+}
+
+read_prob <- function(location) {
+  x <- read.csv(location, header=FALSE) 
+  n <- length(x)
+  x <- x %>%
+    t %>%
+    as.tibble
+
+  names(x) <- c('-1.5', 'stop', '1.5')
+  x <- gather(x)
+
+  x$x <- 1:n
+  x
+}
+```
+
+
+```{r, echo=FALSE}
+
+param_ce <- read_params('continuous_extreme/Policy parameters.csv')
+reward_ce <- read_reward('continuous_extreme/Reward.csv')
+
+param_cm <- read_params('continuous_moderate/Policy parameters.csv')
+reward_cm <- read_reward('continuous_moderate/Reward.csv')
+
+prob_de <- read_prob('discrete_extreme/Action probabilities.csv')
+reward_de <- read_reward('discrete_extreme/Reward.csv')
+
+prob_dm <- read_prob('discrete_moderate/Action probabilities.csv')
+reward_dm <- read_reward('discrete_moderate/Reward.csv')
+```
+
+```{r include=FALSE}
+pdf('param_ce.pdf')
+param_ce %>%
+  ggplot(aes(x=x, y=value, group=parameter, color=parameter)) +
+  geom_line() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key=element_blank(),
+        legend.title = element_blank(),
+        legend.position = c(0.8,0.5)) +
+  labs(x='Time-step', y='Parameter')
+dev.off()
+
+pdf('reward_ce.pdf')
+reward_ce %>%
+  filter(key == 'reward') %>%
+  ggplot(aes(x=x, y=value, color=key)) +
+  geom_line() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key=element_blank(),
+        legend.title = element_blank(),
+        legend.position = 'none') +
+  labs(x='Time-step', y='Reward advantage')
+dev.off()
+
+pdf('param_cm.pdf')
+param_cm %>%
+  ggplot(aes(x=x, y=value, group=parameter, color=parameter)) +
+  geom_line() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key=element_blank(),
+        legend.title = element_blank(),
+        legend.position = c(0.8,0.8)) +
+  labs(x='Time-step', y='Parameter')
+dev.off()
+
+pdf('reward_cm.pdf')
+reward_cm %>%
+  filter(key == 'reward') %>%
+  ggplot(aes(x=x, y=value, color=key)) +
+  geom_line() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key=element_blank(),
+        legend.title = element_blank(),
+        legend.position = 'none') +
+  labs(x='Time-step', y='Reward advantage')
+dev.off()
+
+pdf('prob_de.pdf')
+prob_de %>%
+  filter(x > 2) %>%
+  ggplot(aes(x=x, y=value, color=key)) +
+  geom_line() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key=element_blank(),
+        legend.title = element_blank(),
+        legend.position = c(0.8,0.8)) +
+  labs(x='Time-step', y='Action probability')
+dev.off()
+
+pdf('reward_de.pdf')
+reward_de %>%
+  filter(key == 'reward') %>%
+  ggplot(aes(x=x, y=value, color=key)) +
+  geom_line() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key=element_blank(),
+        legend.title = element_blank(),
+        legend.position = 'none') +
+  labs(x='Time-step', y='Reward advantage')
+dev.off()
+
+pdf('prob_dm.pdf')
+prob_dm %>%
+  filter(x > 2) %>%
+  ggplot(aes(x=x, y=value, color=key)) +
+  geom_line() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key=element_blank(),
+        legend.title = element_blank(),
+        legend.position = c(0.15,0.85)) +
+  labs(x='Time-step', y='Action probability')
+dev.off()
+
+pdf('reward_dm.pdf')
+reward_dm %>%
+  filter(key == 'reward') %>%
+  ggplot(aes(x=x, y=value, color=key)) +
+  geom_line() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        legend.key=element_blank(),
+        legend.title = element_blank(),
+        legend.position = 'none') +
+  labs(x='Time-step', y='Reward advantage')
+dev.off()
+
+```
